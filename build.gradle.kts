@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    implementation("com.zaxxer:HikariCP:7.0.2")
 }
 
 java {

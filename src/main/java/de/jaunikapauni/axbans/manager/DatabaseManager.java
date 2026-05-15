@@ -37,7 +37,7 @@ public class DatabaseManager {
 
     public boolean initDatabaseTable1(){
         try(Connection conn = getConnection()){
-            try(PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(255) NOT NULL PRIMARY KEY, deaths INT, sessions INT, isOnline BOOLEAN, first_join DATETIME, last_online DATETIME, player_kills INT, mob_kills INT)")){
+            try(PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(255) NOT NULL PRIMARY KEY, isBanned BOOLEAN, reason VARCHAR(255))")){
                 ps.executeUpdate();
                 return true;
             }

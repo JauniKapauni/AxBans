@@ -9,3 +9,11 @@ load: POSTWORLD
 
 authors: [ JauniKapauni ]
 website: https://github.com/JauniKapauni
+
+commands:
+  ban:
+    usage: /ban <player> <reason>
+    description: Bans a player
+  unban:
+    usage: /unban <player>
+    description: Unbans a player

@@ -1,0 +1,11 @@
+name: AxBans
+description: $description
+prefix: AxBans
+version: '${version}'
+
+main: de.jaunikapauni.axbans.AxBans
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ JauniKapauni ]
+website: https://github.com/JauniKapauni

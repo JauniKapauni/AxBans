@@ -30,7 +30,7 @@ public class BanCommand implements CommandExecutor {
             sourcePlayer.sendMessage(ChatColor.RED + "Please enter a playername.");
             return false;
         }
-        if(!(Bukkit.getServer().getPlayer(args[0]) instanceof Player)){
+        if(args.length < 2){
             sourcePlayer.sendMessage(ChatColor.RED + "Please enter a reason.");
             return false;
         }

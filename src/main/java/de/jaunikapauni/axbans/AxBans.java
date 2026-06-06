@@ -34,7 +34,7 @@ public final class AxBans extends JavaPlugin {
         }
         getLogger().info("DB connection successfully established!");
         getCommand("ban").setExecutor(new BanCommand(this));
-        getCommand("ban").setExecutor(new UnbanCommand(this));
+        getCommand("unban").setExecutor(new UnbanCommand(this));
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
     }

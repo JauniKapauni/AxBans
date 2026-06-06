@@ -40,7 +40,7 @@ public class UnbanCommand implements CommandExecutor {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        sourcePlayer.sendMessage("You banned " + targetPlayer.getName());
+        sourcePlayer.sendMessage("You unbanned " + targetPlayer.getName());
         return true;
     }
 }

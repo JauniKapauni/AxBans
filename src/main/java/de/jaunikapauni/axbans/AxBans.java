@@ -42,6 +42,7 @@ public final class AxBans extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        databaseManager.close();
     }
 
     public boolean isBanned(UUID uuid) throws SQLException {

@@ -24,6 +24,10 @@ database:
   password:
 ```
 ---
+## Commands & Permissions
+- `/ban` - `axbans.ban`
+- `/unban` - `axbans.unban`
+---
 ## Support
 Discord: [AxForge](https://discord.gg/rYSxV4daS8)
 ---

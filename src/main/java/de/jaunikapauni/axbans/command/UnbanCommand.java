@@ -28,6 +28,10 @@ public class UnbanCommand implements CommandExecutor {
             return true;
         }
         Player sourcePlayer = (Player) sender;
+        if(!sourcePlayer.hasPermission("axbans.unban")){
+            sourcePlayer.sendMessage("You don't have the permission!");
+            return true;
+        }
         if (args.length == 0) {
             sourcePlayer.sendMessage(ChatColor.RED + "Please enter a playername.");
             return false;

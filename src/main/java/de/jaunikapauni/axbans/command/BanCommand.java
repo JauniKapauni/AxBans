@@ -26,6 +26,10 @@ public class BanCommand implements CommandExecutor {
             return true;
         }
         Player sourcePlayer = (Player) sender;
+        if(!sourcePlayer.hasPermission("axbans.ban")){
+            sourcePlayer.sendMessage("You don't have the permission!");
+            return true;
+        }
         if(args.length == 0){
             sourcePlayer.sendMessage(ChatColor.RED + "Please enter a playername.");
             return false;

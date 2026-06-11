@@ -29,7 +29,7 @@ public class UnbanCommand implements CommandExecutor {
         }
         Player sourcePlayer = (Player) sender;
         if(!sourcePlayer.hasPermission("axbans.unban")){
-            sourcePlayer.sendMessage("You don't have the permission!");
+            sourcePlayer.sendMessage("You don't have the permission! [axbans.unban]");
             return true;
         }
         if (args.length == 0) {

@@ -27,7 +27,7 @@ public class BanCommand implements CommandExecutor {
         }
         Player sourcePlayer = (Player) sender;
         if(!sourcePlayer.hasPermission("axbans.ban")){
-            sourcePlayer.sendMessage("You don't have the permission!");
+            sourcePlayer.sendMessage("You don't have the permission! [axbans.ban]");
             return true;
         }
         if(args.length == 0){

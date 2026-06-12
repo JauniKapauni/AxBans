@@ -6,12 +6,16 @@ import de.jaunikapauni.axbans.listener.PlayerJoinListener;
 import de.jaunikapauni.axbans.listener.PlayerQuitListener;
 import de.jaunikapauni.axbans.manager.DatabaseManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.A;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public final class AxBans extends JavaPlugin {
@@ -44,6 +48,23 @@ public final class AxBans extends JavaPlugin {
         getLogger().info(String.join("Authors: " + ", ", getDescription().getAuthors()));
         getLogger().info("----------------------------------------");
         getLogger().info("");
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                try(Connection conn = databaseManager.getConnection()){
+                    try(PreparedStatement ps = conn.prepareStatement("SELECT * FROM players WHERE isBanned = TRUE")){
+                        ResultSet rs = ps.executeQuery();
+                        while (rs.next()){
+                            UUID uuidString = UUID.fromString(rs.getString("uuid"));
+                            Player p = Bukkit.getPlayer(uuidString);
+                            p.kick();
+                        }
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, 0L, 20L);
     }
 
     @Override

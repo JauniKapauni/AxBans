@@ -29,7 +29,7 @@ public class PlayerJoinListener implements Listener {
             if (!rs.next()) {
                 PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, name, isBanned, reason) VALUES (?, ?, ?, ?)");
                 ps1.setString(1, p.getUniqueId().toString());
-                ps.setString(2, p.getName());
+                ps1.setString(2, p.getName());
                 ps1.setBoolean(3, false);
                 ps1.setString(4, "");
                 ps1.executeUpdate();

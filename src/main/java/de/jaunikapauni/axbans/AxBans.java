@@ -3,12 +3,10 @@ package de.jaunikapauni.axbans;
 import de.jaunikapauni.axbans.command.BanCommand;
 import de.jaunikapauni.axbans.command.UnbanCommand;
 import de.jaunikapauni.axbans.listener.PlayerJoinListener;
-import de.jaunikapauni.axbans.listener.PlayerQuitListener;
 import de.jaunikapauni.axbans.manager.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -17,8 +15,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public final class AxBans extends JavaPlugin {
@@ -43,7 +39,6 @@ public final class AxBans extends JavaPlugin {
         getCommand("ban").setExecutor(new BanCommand(this));
         getCommand("unban").setExecutor(new UnbanCommand(this));
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
         getLogger().info("");
         getLogger().info("----------------------------------------");
         getLogger().info("Name: " + getName());

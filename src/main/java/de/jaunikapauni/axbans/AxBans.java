@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.units.qual.A;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,23 +51,7 @@ public final class AxBans extends JavaPlugin {
         getLogger().info(String.join("Authors: " + ", ", getDescription().getAuthors()));
         getLogger().info("----------------------------------------");
         getLogger().info("");
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                try(Connection conn = databaseManager.getConnection()){
-                    try(PreparedStatement ps = conn.prepareStatement("SELECT * FROM players WHERE isBanned = TRUE")){
-                        ResultSet rs = ps.executeQuery();
-                        while (rs.next()){
-                            UUID uuidString = UUID.fromString(rs.getString("uuid"));
-                            Player p = Bukkit.getPlayer(uuidString);
-                            p.kick();
-                        }
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }, 0L, 20L);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     @Override
@@ -97,6 +84,23 @@ public final class AxBans extends JavaPlugin {
                 return rs.getString("reason");
             }
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void kickPlayerProxy(String player, String reason){
+        Player messenger = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        if(messenger == null){
+            return;
+        }
+        try{
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(baos);
+            dos.writeUTF("KickPlayer");
+            dos.writeUTF(player);
+            dos.writeUTF(reason);
+            messenger.sendPluginMessage(this, "BungeeCord", baos.toByteArray());
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

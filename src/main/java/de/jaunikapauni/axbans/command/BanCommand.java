@@ -48,10 +48,7 @@ public class BanCommand implements CommandExecutor {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        Player target = targetPlayer.getPlayer();
-        if(target != null && target.isOnline()){
-            target.kick();
-        }
+        reference.kickPlayerProxy(targetPlayer.getName(), "You are banned: " + reason);
         sourcePlayer.sendMessage("You banned " + targetPlayer.getName());
         return true;
     }

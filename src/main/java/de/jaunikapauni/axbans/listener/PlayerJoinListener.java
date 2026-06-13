@@ -35,7 +35,7 @@ public class PlayerJoinListener implements Listener {
             }
         }
         if (reference.isBanned(p.getUniqueId())) {
-            p.kickPlayer(reference.getBanReason(p.getUniqueId()));
+            reference.kickPlayerProxy(p.getName(), "You are banned: " + reference.getBanReason(p.getUniqueId()));
             Bukkit.getLogger().info(p.getName() + " tried to join, but is banned!");
         }
     }

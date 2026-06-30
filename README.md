@@ -30,6 +30,7 @@ database:
 ---
 ## Support
 Discord: [AxForge](https://discord.gg/rYSxV4daS8)
+
 ---
 ## License
 AxBans is licensed under the permissive MIT License. Please see [LICENSE](https://github.com/JauniKapauni/AxBans/blob/master/LICENSE) for more info.

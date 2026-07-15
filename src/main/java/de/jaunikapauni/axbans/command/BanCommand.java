@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class BanCommand implements CommandExecutor {
     AxBans reference;
@@ -39,7 +40,7 @@ public class BanCommand implements CommandExecutor {
             return false;
         }
         OfflinePlayer targetPlayer = Bukkit.getServer().getOfflinePlayer(args[0]);
-        String reason = args[1];
+        String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         try(Connection conn = reference.getDatabaseManager().getConnection()){
             PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = true, reason = ? WHERE uuid = ?");
                 ps.setString(1, reason);

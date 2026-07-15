@@ -22,23 +22,32 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        try (Connection conn = reference.getDatabaseManager().getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("SELECT uuid FROM players WHERE uuid = ?");
-            ps.setString(1, p.getUniqueId().toString());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, isBanned, reason) VALUES (?, ?, ?)");
-                ps1.setString(1, p.getUniqueId().toString());
-                ps1.setBoolean(2, false);
-                ps1.setString(3, "");
-                ps1.executeUpdate();
+        Bukkit.getScheduler().runTaskAsynchronously(reference, () -> {
+            try(Connection conn = reference.getDatabaseManager().getConnection()){
+                try(PreparedStatement ps = conn.prepareStatement("SELECT isBanned, reason FROM players WHERE uuid = ?")){
+                    ps.setString(1, p.getUniqueId().toString());
+                    ResultSet rs = ps.executeQuery();
+                    if(!rs.next()){
+                        try(PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, isBanned, reason) VALUES (?, ?, ?)")){
+                            ps1.setString(1, p.getUniqueId().toString());
+                            ps1.setBoolean(2, false);
+                            ps1.setString(3, "");
+                            ps1.executeUpdate();
+                        }
+                    } else {
+                        boolean banned = rs.getBoolean("isBanned");
+                        String reason = rs.getString("reason");
+                        if(banned){
+                            Bukkit.getScheduler().runTask(reference, () -> {
+                                reference.kickPlayerProxy(p.getName(), "You are banned: " + reason);
+                                Bukkit.getLogger().info(p.getName() + " tried to join, but is banned!");
+                            });
+                        }
+                    }
+                }
+            } catch (SQLException err){
+                err.printStackTrace();
             }
-            if (reference.isBanned(p.getUniqueId())) {
-                reference.kickPlayerProxy(p.getName(), "You are banned: " + reference.getBanReason(p.getUniqueId()));
-                Bukkit.getLogger().info(p.getName() + " tried to join, but is banned!");
-            }
-        } catch (SQLException err){
-            err.printStackTrace();
-        }
+        });
     }
 }

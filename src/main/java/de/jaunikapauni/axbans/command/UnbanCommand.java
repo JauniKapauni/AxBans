@@ -37,23 +37,23 @@ public class UnbanCommand implements CommandExecutor {
             return false;
         }
         OfflinePlayer targetPlayer = Bukkit.getServer().getOfflinePlayer(args[0]);
-        try {
-            if(!reference.isBanned(targetPlayer.getUniqueId())){
-                sender.sendMessage("Player isn't banned!");
-                return true;
+        Bukkit.getScheduler().runTaskAsynchronously(reference, () -> {
+            try(Connection conn = reference.getDatabaseManager().getConnection()){
+                try(PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = false WHERE uuid = ?")){
+                    ps.setString(1, targetPlayer.getUniqueId().toString());
+                    int changed = ps.executeUpdate();
+                    Bukkit.getScheduler().runTask(reference, () -> {
+                        if(changed == 0){
+                            sourcePlayer.sendMessage("Player wasn't found!");
+                            return;
+                        }
+                        sourcePlayer.sendMessage("You unbanned " + targetPlayer.getName());
+                    });
+                }
+            } catch (SQLException err){
+                err.printStackTrace();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try (Connection conn = reference.getDatabaseManager().getConnection()) {
-            try(PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = false WHERE uuid = ?")){
-                ps.setString(1, targetPlayer.getUniqueId().toString());
-                ps.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        sourcePlayer.sendMessage("You unbanned " + targetPlayer.getName());
+        });
         return true;
     }
 }

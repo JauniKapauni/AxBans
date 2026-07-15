@@ -45,39 +45,42 @@ public class BanCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Player not found.");
             return true;
         }
-        try {
-            if(reference.isBanned(targetPlayer.getUniqueId())){
-                sender.sendMessage("Player is already banned!");
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
         String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-        try(Connection conn = reference.getDatabaseManager().getConnection()){
-            try(PreparedStatement ps = conn.prepareStatement("SELECT uuid FROM players WHERE uuid = ?")){
-                ps.setString(1, targetPlayer.getUniqueId().toString());
-                ResultSet rs = ps.executeQuery();
-                if(!rs.next()){
-                    try(PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, isBanned, reason) VALUES(?, ?, ?)")){
-                        ps1.setString(1, targetPlayer.getUniqueId().toString());
-                        ps1.setBoolean(2, true);
-                        ps1.setString(3, reason);
-                        ps1.executeUpdate();
+        Bukkit.getScheduler().runTaskAsynchronously(reference, () -> {
+            try(Connection conn = reference.getDatabaseManager().getConnection()){
+                try(PreparedStatement ps = conn.prepareStatement("SELECT isBanned FROM players WHERE uuid = ?")){
+                    ps.setString(1, targetPlayer.getUniqueId().toString());
+                    ResultSet rs = ps.executeQuery();
+                    boolean exists = rs.next();
+                    if(exists && rs.getBoolean("isBanned")){
+                        Bukkit.getScheduler().runTask(reference, () -> {
+                            sender.sendMessage("Player is already banned!");
+                        });
+                        return;
                     }
-                } else {
-                    try(PreparedStatement ps2 = conn.prepareStatement("UPDATE players SET isBanned = true, reason = ? WHERE uuid = ?")){
-                        ps2.setString(1, reason);
-                        ps2.setString(2, targetPlayer.getUniqueId().toString());
-                        ps2.executeUpdate();
+                    if(!exists){
+                        try(PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, isBanned, reason) VALUES (?, ?, ?)")){
+                            ps1.setString(1, targetPlayer.getUniqueId().toString());
+                            ps1.setBoolean(2, true);
+                            ps1.setString(3, reason);
+                            ps1.executeUpdate();
+                        }
+                    } else {
+                        try(PreparedStatement ps2 = conn.prepareStatement("UPDATE players SET isBanned = true, reason = ? WHERE uuid = ?")){
+                            ps2.setString(1, reason);
+                            ps2.setString(2, targetPlayer.getUniqueId().toString());
+                            ps2.executeUpdate();
+                        }
                     }
                 }
+                Bukkit.getScheduler().runTask(reference, () -> {
+                    reference.kickPlayerProxy(targetPlayer.getName(), "You are banned: " + reason);
+                    sourcePlayer.sendMessage("You banned " + targetPlayer.getName());
+                });
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        reference.kickPlayerProxy(targetPlayer.getName(), "You are banned: " + reason);
-        sourcePlayer.sendMessage("You banned " + targetPlayer.getName());
+        });
         return true;
     }
 }

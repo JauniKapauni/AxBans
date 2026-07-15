@@ -56,34 +56,6 @@ public final class AxBans extends JavaPlugin {
         databaseManager.close();
     }
 
-    public boolean isBanned(UUID uuid) throws SQLException {
-        try(Connection conn = databaseManager.getConnection()){
-            PreparedStatement ps = conn.prepareStatement("SELECT isBanned FROM players WHERE uuid = ?");
-                ps.setString(1, uuid.toString());
-                try(ResultSet rs = ps.executeQuery()){
-                    if(!rs.next()){
-                        return false;
-                    }
-                    return rs.getBoolean("isBanned");
-                }
-        }
-    }
-
-    public String getBanReason(UUID uuid){
-        try(Connection conn = databaseManager.getConnection()){
-            PreparedStatement ps = conn.prepareStatement("SELECT reason FROM players WHERE uuid = ?");
-            ps.setString(1, uuid.toString());
-            try(ResultSet rs = ps.executeQuery()){
-                if(!rs.next()){
-                    return "false";
-                }
-                return rs.getString("reason");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void kickPlayerProxy(String player, String reason){
         Player messenger = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
         if(messenger == null){

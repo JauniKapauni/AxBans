@@ -40,6 +40,10 @@ public class BanCommand implements CommandExecutor {
             return false;
         }
         OfflinePlayer targetPlayer = Bukkit.getServer().getOfflinePlayer(args[0]);
+        if(!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline()){
+            sender.sendMessage(ChatColor.RED + "Player not found.");
+            return true;
+        }
         String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         try(Connection conn = reference.getDatabaseManager().getConnection()){
             PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = true, reason = ? WHERE uuid = ?");

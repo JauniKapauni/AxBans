@@ -65,6 +65,12 @@ public class BanCommand implements CommandExecutor {
                         ps1.setString(3, reason);
                         ps1.executeUpdate();
                     }
+                } else {
+                    try(PreparedStatement ps2 = conn.prepareStatement("UPDATE players SET isBanned = true, reason = ? WHERE uuid = ?")){
+                        ps2.setString(1, reason);
+                        ps2.setString(2, targetPlayer.getUniqueId().toString());
+                        ps2.executeUpdate();
+                    }
                 }
             }
         } catch (SQLException e) {

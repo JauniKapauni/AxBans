@@ -51,11 +51,10 @@ public class BanCommand implements CommandExecutor {
                 ps.setString(1, targetPlayer.getUniqueId().toString());
                 ResultSet rs = ps.executeQuery();
                 if(!rs.next()){
-                    try(PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, name, isBanned, reason) VALUES(?, ?, ?, ?)")){
+                    try(PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, isBanned, reason) VALUES(?, ?, ?)")){
                         ps1.setString(1, targetPlayer.getUniqueId().toString());
-                        ps1.setString(2, targetPlayer.getName());
-                        ps1.setBoolean(3, true);
-                        ps1.setString(4, reason);
+                        ps1.setBoolean(2, true);
+                        ps1.setString(3, reason);
                         ps1.executeUpdate();
                     }
                 }

@@ -37,6 +37,14 @@ public class UnbanCommand implements CommandExecutor {
             return false;
         }
         OfflinePlayer targetPlayer = Bukkit.getServer().getOfflinePlayer(args[0]);
+        try {
+            if(!reference.isBanned(targetPlayer.getUniqueId())){
+                sender.sendMessage("Player isn't banned!");
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         try (Connection conn = reference.getDatabaseManager().getConnection()) {
             PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = false WHERE uuid = ?");
             ps.setString(1, targetPlayer.getUniqueId().toString());

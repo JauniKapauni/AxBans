@@ -45,6 +45,14 @@ public class BanCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Player not found.");
             return true;
         }
+        try {
+            if(reference.isBanned(targetPlayer.getUniqueId())){
+                sender.sendMessage("Player is already banned!");
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         try(Connection conn = reference.getDatabaseManager().getConnection()){
             try(PreparedStatement ps = conn.prepareStatement("SELECT uuid FROM players WHERE uuid = ?")){

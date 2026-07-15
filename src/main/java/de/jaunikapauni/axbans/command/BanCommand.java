@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -46,10 +47,19 @@ public class BanCommand implements CommandExecutor {
         }
         String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         try(Connection conn = reference.getDatabaseManager().getConnection()){
-            PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = true, reason = ? WHERE uuid = ?");
-                ps.setString(1, reason);
-                ps.setString(2, targetPlayer.getUniqueId().toString());
-                ps.executeUpdate();
+            try(PreparedStatement ps = conn.prepareStatement("SELECT uuid FROM players WHERE uuid = ?")){
+                ps.setString(1, targetPlayer.getUniqueId().toString());
+                ResultSet rs = ps.executeQuery();
+                if(!rs.next()){
+                    try(PreparedStatement ps1 = conn.prepareStatement("INSERT INTO players (uuid, name, isBanned, reason) VALUES(?, ?, ?, ?)")){
+                        ps1.setString(1, targetPlayer.getUniqueId().toString());
+                        ps1.setString(2, targetPlayer.getName());
+                        ps1.setBoolean(3, true);
+                        ps1.setString(4, reason);
+                        ps1.executeUpdate();
+                    }
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -20,7 +20,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) throws SQLException {
+    public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         try (Connection conn = reference.getDatabaseManager().getConnection()) {
             PreparedStatement ps = conn.prepareStatement("SELECT uuid FROM players WHERE uuid = ?");
@@ -34,10 +34,12 @@ public class PlayerJoinListener implements Listener {
                 ps1.setString(4, "");
                 ps1.executeUpdate();
             }
-        }
-        if (reference.isBanned(p.getUniqueId())) {
-            reference.kickPlayerProxy(p.getName(), "You are banned: " + reference.getBanReason(p.getUniqueId()));
-            Bukkit.getLogger().info(p.getName() + " tried to join, but is banned!");
+            if (reference.isBanned(p.getUniqueId())) {
+                reference.kickPlayerProxy(p.getName(), "You are banned: " + reference.getBanReason(p.getUniqueId()));
+                Bukkit.getLogger().info(p.getName() + " tried to join, but is banned!");
+            }
+        } catch (SQLException err){
+            err.printStackTrace();
         }
     }
 }

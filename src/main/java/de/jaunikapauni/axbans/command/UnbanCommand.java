@@ -46,9 +46,10 @@ public class UnbanCommand implements CommandExecutor {
             throw new RuntimeException(e);
         }
         try (Connection conn = reference.getDatabaseManager().getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = false WHERE uuid = ?");
-            ps.setString(1, targetPlayer.getUniqueId().toString());
-            ps.executeUpdate();
+            try(PreparedStatement ps = conn.prepareStatement("UPDATE players SET isBanned = false WHERE uuid = ?")){
+                ps.setString(1, targetPlayer.getUniqueId().toString());
+                ps.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
